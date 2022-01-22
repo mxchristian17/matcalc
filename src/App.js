@@ -1,24 +1,23 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import NavBar from './Components/NavBar/NavBar';
+import Home from './Components/Home/Home';
+import ElementContainer from './Containers/ElementContainer/ElementContainer';
+import { GlobalContextProvider } from './Context/GlobalContext';
 
 function App() {
   return (
+    <BrowserRouter>
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <GlobalContextProvider>
+        <NavBar />
+        <Routes>
+          <Route path="/:catId/:elId" element={<ElementContainer />} />
+          <Route path="/" element={<Home />} />
+        </Routes>
+      </GlobalContextProvider>
     </div>
+    </BrowserRouter>
   );
 }
 
