@@ -10,6 +10,7 @@ export const GlobalContextProvider = ({ children }) => {
     const [precision, setPrecision] = useState(1000)
 
     const changeInput = (reference, val, calcVal) => {
+        val = typeof(val) !== "undefined" ? val : 0
         const objInput = {...input, [reference]: val }
         setInput(objInput)
         calcVal(objInput, inputUnit, outputUnit)

@@ -15,7 +15,7 @@ export const rectangularPerimeter = (input, inUnit = 0.01, outUnit = 0.01) => {
     return ((2 * input.sideA + 2 * input.sideB) * inUnit / outUnit)
 }
 export const poligonalArea = (input, inUnit = 0.01, outUnit = 0.01) => {
-    if (typeof(input.sideA) === "undefined" || typeof(input.sides) === "undefined") return {area: 0, apotema: 0}
+    if (typeof(input.sideA) === "undefined" || typeof(input.sides) === "undefined" || input.sides < 3) return {area: 0, apotema: 0}
     const apotema = (input.sideA/(2*Math.tan(Math.PI/input.sides)))
     return ({area: (poligonalPerimeter(input, inUnit, inUnit)*apotema/2) * inUnit**2 / outUnit**2, apotema: apotema})
 }

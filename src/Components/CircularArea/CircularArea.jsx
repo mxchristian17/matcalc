@@ -26,6 +26,7 @@ function CircularArea(props) {
         context.save();
         context.scale(pixelRatio, pixelRatio);
         context.clearRect(0, 0, width, height);
+        context.restore();
 
         circle(context, width / 2, height / 2, radius)
         doubleArrow(context, 6, (width / 2 - 0.70710678 * radius), (height / 2 + 0.70710678 * radius), (width / 2 + 0.70710678 * radius), (height / 2 - 0.70710678 * radius))
