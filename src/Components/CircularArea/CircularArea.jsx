@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import GlobalContext from '../../Context/GlobalContext';
 import { circularArea } from '../../Global/calcFunctions';
-import { circle, doubleArrow } from '../../Global/CanvasShapes';
+import { contextConfig, circle, doubleArrow } from '../../Global/CanvasShapes';
 import PrecisionSelector from '../PrecisionSelector/PrecisionSelector';
 
 function CircularArea(props) {
@@ -19,19 +19,13 @@ function CircularArea(props) {
     const { width = 200, height = 200, pixelRatio = window.devicePixelRatio } = props;
     const canvas = useRef(null);
     useEffect(() => {
-
+        
         const context = canvas.current.getContext("2d");
-        const radius = 3 * width / 8
-
-        context.save();
-        context.scale(pixelRatio, pixelRatio);
-        context.clearRect(0, 0, width, height);
-        context.restore();
-
-        circle(context, width / 2, height / 2, radius)
-        doubleArrow(context, 6, (width / 2 - 0.70710678 * radius), (height / 2 + 0.70710678 * radius), (width / 2 + 0.70710678 * radius), (height / 2 - 0.70710678 * radius))
-        context.font = "20px Arial";
-        context.fillText(typeof(input.diameter) !== "undefined" ? input.diameter : 0, width / 2 + 5, height / 2 + 15);
+        contextConfig(context, pixelRatio, width, height)
+        circle(context, width / 2, height / 2, input.diameter).map((arrow) => {
+            return doubleArrow(context, width, height, 6, arrow.startX, arrow.startY, arrow.endX, arrow.endY, arrow.text, 0)
+        })
+        
     });
     
     const dw = Math.floor(pixelRatio * width);

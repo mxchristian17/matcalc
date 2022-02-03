@@ -1,13 +1,80 @@
-export const circle = (ctx, centerX, centerY, radius, color = "black") => {
+export const contextConfig = (ctx, pixelRatio, width, height) => {
+    ctx.save();
+    ctx.scale(pixelRatio, pixelRatio);
+    ctx.clearRect(0, 0, width, height);
+    ctx.restore();
+}
+
+export const circle = (ctx, centerX, centerY, diameter, color = "black") => {
+
+    const maxSize = 140
+    const radius = maxSize / 2
+
+    const startX = (centerX - 0.70710678 * radius)
+    const startY = (centerY + 0.70710678 * radius)
+    const endX = (centerX + 0.70710678 * radius)
+    const endY = (centerY - 0.70710678 * radius)
+
+    const arrowDiameterPoints = {
+        startX : startX,
+        startY : startY,
+        endX : endX,
+        endY : endY,
+        text : typeof(diameter) !== "undefined" ? Math.round(diameter*1000)/1000 : 0
+    }
+    
     ctx.strokeStyle = color;
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
     ctx.stroke();
 
-    return
+    return [arrowDiameterPoints]
 }
 
-export const ngon = (ctx, centerX, centerY, sides, color = "black") => {
+export const rectangle = (ctx, centerX, centerY, sideA, sideB, color = "black") => {
+
+    const maxSize = 80
+    let A = parseFloat(sideA)
+    let B = parseFloat(sideB)
+    if(A >= B) {
+        B = B / (A / maxSize)
+        A = maxSize
+    }
+    if(B >= A) {
+        A = A / (B / maxSize)
+        B = maxSize
+    }
+    
+    const width = parseInt(A) 
+    const height = parseInt(B)
+    const x = parseInt(centerX - width / 2)
+    const y = parseInt(centerY - height / 2)
+
+    const arrowSideAPoints = {
+        startX : x,
+        startY : y,
+        endX : x + width,
+        endY : y,
+        text : typeof(sideA) !== "undefined" ? Math.round(sideA*1000)/1000 : 0
+    }
+
+    const arrowSideBPoints = {
+        startX : x + width,
+        startY : y,
+        endX : x + width,
+        endY : y + height,
+        text : typeof(sideB) !== "undefined" ? Math.round(sideB*1000)/1000 : 0
+    }
+    
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.rect(x, y, A, B);
+    ctx.stroke();
+
+    return [arrowSideAPoints, arrowSideBPoints]
+}
+
+export const ngon = (ctx, centerX, centerY, sides, sideA, color = "black") => {
 
     const apotema = 30 //(sideA/(2*Math.tan(Math.PI/sides)))
     const shapeRotationAngle = 3 * Math.PI / 2
@@ -15,7 +82,6 @@ export const ngon = (ctx, centerX, centerY, sides, color = "black") => {
     const startY = centerY +  2 * apotema * Math.sin(shapeRotationAngle)
     const pointX = (i) => centerX + 2 * apotema * Math.cos(i * 2 * Math.PI / sides + shapeRotationAngle)
     const pointY = (i) => centerY + 2 * apotema * Math.sin(i * 2 * Math.PI / sides + shapeRotationAngle)
-
 
     ctx.beginPath();
 
@@ -29,7 +95,15 @@ export const ngon = (ctx, centerX, centerY, sides, color = "black") => {
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    return { startX : startX, startY : startY, endX : pointX(i), endY : pointY(i)}
+    const arrowSideAPoints = {
+        startX : startX,
+        startY : startY,
+        endX : pointX(i),
+        endY : pointY(i),
+        text : typeof(sideA) !== "undefined" ? Math.round(sideA*1000)/1000 : 0
+    }
+
+    return [arrowSideAPoints]
 }
 
 export const startArrow = (ctx, arrowSize, startX, startY, endX, endY, color = "#00AAAA") => {
@@ -89,7 +163,7 @@ export const endArrow = (ctx, arrowSize, startX, startY, endX, endY, color = "#0
     return 
 }
 
-export const doubleArrow = (ctx, arrowSize, startX, startY, endX, endY, text = "", offset = 0, color = "#00AAAA") => {
+export const doubleArrow = (ctx, width, height, arrowSize, startX, startY, endX, endY, text = "", offset = 0, color = "#00AAAA") => {
 
     const angle = Math.atan((endY-startY)/(endX-startX))
     const distance = Math.sqrt((endX-startX)**2+(endY-startY)**2)
@@ -179,8 +253,9 @@ export const doubleArrow = (ctx, arrowSize, startX, startY, endX, endY, text = "
     ctx.stroke();
 
     //text
-    ctx.fillText(text, textPoint.x, textPoint.y);
     ctx.font = "16px Arial";
-
+    ctx.textAlign = angle > 0 ? "left" : "right";
+    const textWidth = angle > 0 ? width-25-textPoint.x : textPoint.x-25;
+    ctx.fillText(text, textPoint.x, textPoint.y, textWidth);
     return
 }

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import GlobalContext from '../../Context/GlobalContext';
 import { poligonalPerimeter } from '../../Global/calcFunctions';
-import { ngon, doubleArrow } from '../../Global/CanvasShapes';
+import { contextConfig, ngon, doubleArrow } from '../../Global/CanvasShapes';
 import PrecisionSelector from '../PrecisionSelector/PrecisionSelector';
 
 function PoligonalPerimeter(props) {
@@ -21,16 +21,11 @@ function PoligonalPerimeter(props) {
     useEffect(() => {
 
         const context = canvas.current.getContext("2d");
+        contextConfig(context, pixelRatio, width, height)
+        ngon(context, width / 2, height / 2, input.sides, input.sideA).map((arrow) => {
+            return doubleArrow(context, width, height, 6, arrow.startX, arrow.startY, arrow.endX, arrow.endY, arrow.text, 10)
+        })
 
-        context.save();
-        context.scale(pixelRatio, pixelRatio);
-        context.clearRect(0, 0, width, height);
-        context.restore();
-
-        const text = typeof(input.sideA) !== "undefined" ? Math.round(input.sideA*precision)/precision : 0
-        const sides = typeof(input.sides) !== "undefined" ? Math.round(input.sides) : 0
-        const arrowPoints = ngon(context, width / 2, height / 2, sides)
-        doubleArrow(context, 6, arrowPoints.startX, arrowPoints.startY, arrowPoints.endX, arrowPoints.endY, text, 10)
     });
     
     const dw = Math.floor(pixelRatio * width);

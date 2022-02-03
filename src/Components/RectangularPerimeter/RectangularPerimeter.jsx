@@ -1,22 +1,42 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import GlobalContext from '../../Context/GlobalContext';
 import { rectangularPerimeter } from '../../Global/calcFunctions';
+import { contextConfig, rectangle, doubleArrow } from '../../Global/CanvasShapes';
 import PrecisionSelector from '../PrecisionSelector/PrecisionSelector';
 
 function RectangularPerimeter(props) {
 
     const [resultVal, setResultVal] = useState(0)
-    const { changeInput, inputUnit, changeInputUnits, precision, outputUnit, changeOutputUnits } = useContext(GlobalContext)
+    const { input, changeInput, inputUnit, changeInputUnits, precision, outputUnit, changeOutputUnits } = useContext(GlobalContext)
 
     const calcVal = (value, inUnit, outUnit) => {
         const area = rectangularPerimeter(value, inUnit, outUnit)
         setResultVal(area)
     }
 
+    // Canvas set
+    
+    const { width = 200, height = 200, pixelRatio = window.devicePixelRatio } = props;
+    const canvas = useRef(null);
+    useEffect(() => {
+
+        const context = canvas.current.getContext("2d");
+        contextConfig(context, pixelRatio, width, height)
+        rectangle(context, width / 2, height / 2, input.sideA, input.sideB).map((arrow) => {
+            return doubleArrow(context, width, height, 6, arrow.startX, arrow.startY, arrow.endX, arrow.endY, arrow.text, 10)
+        })
+        
+    });
+    
+    const dw = Math.floor(pixelRatio * width);
+    const dh = Math.floor(pixelRatio * height);
+    const style = { width, height };
+
     return (
         <div className="row justify-content-center">
             <div className="col col-md-9 col-lg-6">
                 <h2 className="my-4">Cálculo de perímetro de rectángulo</h2>
+                <canvas ref={canvas} width={dw} height={dh} style={style} />
                 <form>
                     <div className="input-group my-3">
                         <span className="input-group-text">Lado A:</span>
